@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+<head>
+  <title>todo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static "css/index.css"%}">
+</head>
+
+<body>
+  <section class="section">
+    <div id="grayScreen" class="gray-screen">
+      <div id="modal" class="modal">
+        <button id="close" type="button">X</button>
+        <form method="POST"> {% csrf_token %}
+          <h2 id="modalTitle"></h2>
+          <div class="form-group">
+            <label for="title" class="sr-only">title</label>
+            {{ form.task_title }}
+          </div>
+          <div class="form-group">
+            <label for="description" class="sr-only">description</label>
+            {{ form.task_description }}
+          </div>
+          <button data-show id="create" class="submit" type="submit" name="create">Create</button>
+          <button id="update" class="update" type="submit" name="update">Update</button>
+        </form>
+      </div>
+    </div>
+    <div class="todo-container">
+      <header>
+        <h1 class="display-1">Todos</h1>
+        <button id="addTask" type="button">+</button>
+      </header>
+      <ul>
+        {% if tasks %}
+          {% for task in tasks %}
+          <li>
+            <div>
+              <div>
+                <a href="{% url 'view' task.id %}">{{ task.task_title }}</a>
+                <form action="{% url 'delete' task.id %}" method="post">
+                    {% csrf_token %}
+                    <input id="{{ task.id }}" class="delete" type="submit" value="🗑">
+                </form>
+                <button 
+                  data-id="{{task.id}}" 
+                  data-title="{{task.task_title}}" 
+                  data-description="{{task.task_description}}"
+                  class="edit" 
+                  type="button"
+                  >✎</button>
+              </div>
+              <input class="completed" data-id="{{ task.id }}" type="checkbox" name="completed" {{ task.task_completed|yesno:"checked," }}>
+            </div>
+          </li>
+          
+          {% endfor %}
+        {% else %}
+        <li>There are no tasks created</li>
+        {% endif %}
+      </ul>
+    </div>
+  </section>
+</body>
+<script src="{% static 'js/index.js' %}"></script>
+
+</html>
